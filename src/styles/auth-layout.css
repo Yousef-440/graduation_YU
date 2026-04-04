@@ -1,0 +1,193 @@
+/* ═══════════════════════════════════════════════════════════
+   Auth Layout — split-screen shell
+   ═══════════════════════════════════════════════════════════ */
+
+/* Root wrapper ─────────────────────────────────────────────── */
+.al-root {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #060b14;
+  overflow: hidden;
+}
+
+/* ── LEFT PANEL ─────────────────────────────────────────────── */
+.al-left {
+  position: relative;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 40px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 25% 35%, rgba(0, 200, 90,  0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 70%, rgba(0, 100, 255, 0.18) 0%, transparent 55%),
+    linear-gradient(160deg, #050e1a 0%, #07141f 50%, #060c16 100%);
+}
+
+/* Glow orbs */
+.al-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(72px);
+}
+.al-orb-top {
+  width: 360px; height: 360px;
+  top: -80px; left: -60px;
+  background: radial-gradient(circle, rgba(0, 210, 100, 0.22) 0%, transparent 70%);
+}
+.al-orb-bottom {
+  width: 300px; height: 300px;
+  bottom: -60px; right: -40px;
+  background: radial-gradient(circle, rgba(0, 120, 255, 0.18) 0%, transparent 70%);
+}
+
+/* Particles / stars */
+.al-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.al-star {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 210, 120, 0.75);
+  animation: alStarPulse ease-in-out infinite;
+}
+@keyframes alStarPulse {
+  0%, 100% { opacity: 0.12; transform: scale(1);   }
+  50%       { opacity: 0.80; transform: scale(1.7); }
+}
+
+/* Branding block */
+.al-brand {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 420px;
+}
+
+/* Logo icon circle */
+.al-logo-wrap {
+  margin-bottom: 20px;
+}
+.al-logo-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #00ff78 0%, #00c6ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  color: #050e1a;
+  box-shadow: 0 0 32px rgba(0, 255, 120, 0.45);
+  margin: 0 auto;
+  animation: alLogoPulse 3s ease-in-out infinite;
+}
+@keyframes alLogoPulse {
+  0%, 100% { box-shadow: 0 0 32px rgba(0, 255, 120, 0.45); }
+  50%       { box-shadow: 0 0 52px rgba(0, 255, 120, 0.70); }
+}
+
+/* App name */
+.al-app-name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  margin: 0 0 18px;
+}
+
+/* Big tagline */
+.al-tagline {
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: #e6f1ff;
+  margin: 0 0 12px;
+}
+.al-tagline-accent {
+  background: linear-gradient(90deg, #00ff78, #00c6ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Sub text */
+.al-sub {
+  font-size: 0.92rem;
+  color: rgba(180, 200, 230, 0.65);
+  line-height: 1.7;
+  margin: 0 0 32px;
+  max-width: 340px;
+}
+
+/* Stats row */
+.al-stats {
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+}
+.al-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.al-stat-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #00ff78;
+}
+.al-stat-label {
+  font-size: 0.75rem;
+  color: rgba(180, 200, 230, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Divider line between stats */
+.al-stats .al-stat + .al-stat {
+  padding-left: 28px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ── RIGHT PANEL ─────────────────────────────────────────────── */
+.al-right {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  background:
+    radial-gradient(ellipse at 60% 40%, rgba(0, 80, 200, 0.08) 0%, transparent 60%),
+    #07101e;
+}
+
+/* ── RESPONSIVE (mobile → stacked) ──────────────────────────── */
+@media (max-width: 768px) {
+  .al-root {
+    flex-direction: column;
+  }
+  .al-left {
+    width: 100%;
+    padding: 40px 24px 32px;
+    min-height: 260px;
+  }
+  .al-tagline { font-size: 1.6rem; }
+  .al-sub     { display: none; }
+  .al-stats   { gap: 16px; }
+  .al-right {
+    width: 100%;
+    padding: 24px 16px 40px;
+    align-items: flex-start;
+  }
+}
