@@ -16,15 +16,19 @@ export function AuthProvider({ children }) {
   const [user, setUser]               = useState(null)
   const [loading, setLoading]         = useState(true)
 
-  // Ref keeps the current token available inside closures without stale captures
   const tokenRef = useRef(null)
 
   const storeTokens = useCallback((tokens) => {
     tokenRef.current = tokens.accessToken
     setAccessToken(tokens.accessToken)
-    localStorage.setItem('refreshToken', tokens.refreshToken)
+    if (tokens.refreshToken && tokens.refreshToken !== 'undefined') {
+      localStorage.setItem('refreshToken', tokens.refreshToken)
+    }
     const payload = parseJwtPayload(tokens.accessToken)
-    setUser({ email: payload?.sub ?? '' })
+    setUser({
+      email: payload?.sub ?? '',
+      role:  tokens.role ?? payload?.role ?? '',
+    })
   }, [])
 
   const clearTokens = useCallback(() => {
@@ -34,17 +38,20 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('refreshToken')
   }, [])
 
-  // On mount: silently exchange a stored refresh token for a fresh access token
   useEffect(() => {
     const storedRefresh = localStorage.getItem('refreshToken')
-    if (!storedRefresh) {
+    if (!storedRefresh || storedRefresh === 'undefined') {
+      localStorage.removeItem('refreshToken')
       setLoading(false)
       return
     }
     apiRefresh(storedRefresh)
-      .then(({ data }) => {
-        if (data) storeTokens(data)
-        else clearTokens()
+      .then(({ data, networkError }) => {
+        if (data) {
+          storeTokens(data)
+        } else if (!networkError) {
+          clearTokens()
+        }
       })
       .finally(() => setLoading(false))
   }, [storeTokens, clearTokens])
@@ -64,10 +71,6 @@ export function AuthProvider({ children }) {
     if (token) await apiLogout(token)
   }, [clearTokens])
 
-  /**
-   * Authenticated fetch wrapper.
-   * Attaches Bearer token, auto-refreshes on 401, retries once.
-   */
   const authFetch = useCallback(async (url, options = {}) => {
     const execute = (token) =>
       fetch(url, {

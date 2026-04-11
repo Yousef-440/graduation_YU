@@ -1,4 +1,5 @@
 import FeatureCard from './FeatureCard'
+import { useThemeMode } from '../context/ThemeContext'
 
 const features = [
   {
@@ -14,7 +15,7 @@ const features = [
     title: 'KPI Monitoring',
     description:
       'Automatically calculate key metrics like delivery rate and inventory turnover. Stay ahead with live performance data.',
-    color: '#00ff78',
+    color: '#00c850',
     bgImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=60',
   },
   {
@@ -36,15 +37,22 @@ const features = [
 ]
 
 export default function Features() {
+  const { mode } = useThemeMode()
+  const isDark = mode === 'dark'
+
+  const sectionBg = isDark
+    ? 'linear-gradient(180deg, #020818 0%, #040d1e 50%, #020818 100%)'
+    : 'linear-gradient(180deg, #f0f4f8 0%, #e8eef8 50%, #f0f4f8 100%)'
+
   return (
     <section
       id="features"
       style={{
-        background:
-          'linear-gradient(180deg, #020818 0%, #040d1e 50%, #020818 100%)',
+        background: sectionBg,
         padding: '90px 0',
         position: 'relative',
         overflow: 'hidden',
+        transition: 'background 0.25s ease',
       }}
     >
       <div
@@ -55,8 +63,9 @@ export default function Features() {
           transform: 'translate(-50%, -50%)',
           width: 600,
           height: 600,
-          background:
-            'radial-gradient(circle, rgba(0,100,255,0.06) 0%, transparent 70%)',
+          background: isDark
+            ? 'radial-gradient(circle, rgba(0,100,255,0.06) 0%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(0,100,255,0.04) 0%, transparent 70%)',
           borderRadius: '50%',
           pointerEvents: 'none',
         }}
@@ -68,7 +77,7 @@ export default function Features() {
             className="badge rounded-pill mb-3 px-3 py-2"
             style={{
               background: 'rgba(0,198,255,0.12)',
-              color: '#00c6ff',
+              color: '#00a8e0',
               border: '1px solid rgba(0,198,255,0.3)',
               fontSize: 13,
             }}
@@ -78,17 +87,18 @@ export default function Features() {
           </span>
           <h2
             className="fw-bold mb-3"
-            style={{ color: '#e6f1ff', fontSize: 'clamp(1.6rem, 3vw, 2.4rem)' }}
+            style={{ color: 'var(--landing-text-primary)', fontSize: 'clamp(1.6rem, 3vw, 2.4rem)', transition: 'color 0.25s ease' }}
           >
             Powerful Features for Smarter Logistics
           </h2>
           <p
             className="mx-auto"
             style={{
-              color: '#8892b0',
+              color: 'var(--landing-text-secondary)',
               maxWidth: 560,
               fontSize: '1rem',
               lineHeight: 1.7,
+              transition: 'color 0.25s ease',
             }}
           >
             Monitor key metrics, track shipments, and gain insights into your

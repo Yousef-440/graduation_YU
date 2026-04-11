@@ -15,7 +15,6 @@ export default function RegisterForm() {
   const handleChange = (e) => {
     const { name, value } = e.target
     setForm((p) => ({ ...p, [name]: value }))
-    // clear per-field error as the user types
     if (fieldErrors[name] || (name === 'confirm' && fieldErrors.confirmPassword)) {
       setFieldErrors((p) => ({ ...p, [name]: '', confirmPassword: '' }))
     }
@@ -70,7 +69,6 @@ export default function RegisterForm() {
 
       <form onSubmit={handleSubmit} noValidate>
 
-        {/* Name */}
         <div className="af-field">
           <label className="af-label" htmlFor="reg-name">Full Name</label>
           <div className={`af-input-wrap${err('name') ? ' af-input-wrap--error' : ''}`}>
@@ -89,7 +87,6 @@ export default function RegisterForm() {
           {err('name') && <p className="af-field-error">{err('name')}</p>}
         </div>
 
-        {/* Email */}
         <div className="af-field">
           <label className="af-label" htmlFor="reg-email">Email</label>
           <div className={`af-input-wrap${err('email') ? ' af-input-wrap--error' : ''}`}>
@@ -108,7 +105,6 @@ export default function RegisterForm() {
           {err('email') && <p className="af-field-error">{err('email')}</p>}
         </div>
 
-        {/* Password */}
         <div className="af-field">
           <label className="af-label" htmlFor="reg-password">Password</label>
           <div className={`af-input-wrap${err('password') ? ' af-input-wrap--error' : ''}`}>
@@ -136,7 +132,6 @@ export default function RegisterForm() {
           {err('password') && <p className="af-field-error">{err('password')}</p>}
         </div>
 
-        {/* Confirm Password */}
         <div className="af-field">
           <label className="af-label" htmlFor="reg-confirm">Confirm Password</label>
           <div className={`af-input-wrap${confirmErr ? ' af-input-wrap--error' : ''}`}>

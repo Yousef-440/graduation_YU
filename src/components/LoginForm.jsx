@@ -74,9 +74,9 @@ export default function LoginForm() {
             <label className="af-label mb-0" htmlFor="login-password">
               Password
             </label>
-            <a href="#" className="af-forgot">
+            <Link to="/forgot-password" className="af-forgot">
               Forgot password?
-            </a>
+            </Link>
           </div>
           <div className="af-input-wrap">
             <i className="bi bi-lock af-input-icon" />

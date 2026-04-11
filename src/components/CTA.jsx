@@ -1,15 +1,23 @@
 import { Link } from 'react-router-dom'
+import { useThemeMode } from '../context/ThemeContext'
 
 export default function CTA() {
+  const { mode } = useThemeMode()
+  const isDark = mode === 'dark'
+
+  const sectionBg = isDark
+    ? 'radial-gradient(ellipse at 50% 60%, rgba(0,255,120,0.1) 0%, rgba(0,100,255,0.08) 40%, transparent 70%), linear-gradient(180deg, #040d1e 0%, #020818 100%)'
+    : 'radial-gradient(ellipse at 50% 60%, rgba(0,200,100,0.07) 0%, rgba(0,100,255,0.05) 40%, transparent 70%), linear-gradient(180deg, #e8eef8 0%, #f0f4f8 100%)'
+
   return (
     <section
       style={{
-        background:
-          'radial-gradient(ellipse at 50% 60%, rgba(0,255,120,0.1) 0%, rgba(0,100,255,0.08) 40%, transparent 70%), linear-gradient(180deg, #040d1e 0%, #020818 100%)',
+        background: sectionBg,
         padding: '90px 0',
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden',
+        transition: 'background 0.25s ease',
       }}
     >
       <div
@@ -21,7 +29,7 @@ export default function CTA() {
           width: 500,
           height: 500,
           borderRadius: '50%',
-          border: '1px solid rgba(0,255,120,0.08)',
+          border: isDark ? '1px solid rgba(0,255,120,0.08)' : '1px solid rgba(0,200,100,0.1)',
           pointerEvents: 'none',
         }}
       />
@@ -34,7 +42,7 @@ export default function CTA() {
           width: 700,
           height: 700,
           borderRadius: '50%',
-          border: '1px solid rgba(0,100,255,0.06)',
+          border: isDark ? '1px solid rgba(0,100,255,0.06)' : '1px solid rgba(0,100,255,0.07)',
           pointerEvents: 'none',
         }}
       />
@@ -44,7 +52,7 @@ export default function CTA() {
           className="badge rounded-pill mb-3 px-3 py-2"
           style={{
             background: 'rgba(0,255,120,0.12)',
-            color: '#00ff78',
+            color: '#00c850',
             border: '1px solid rgba(0,255,120,0.3)',
             fontSize: 13,
           }}
@@ -56,9 +64,10 @@ export default function CTA() {
         <h2
           className="fw-bold mb-3"
           style={{
-            color: '#e6f1ff',
+            color: 'var(--landing-text-primary)',
             fontSize: 'clamp(1.6rem, 3vw, 2.5rem)',
             lineHeight: 1.3,
+            transition: 'color 0.25s ease',
           }}
         >
           Start Managing Your Supply Chain{' '}
@@ -76,10 +85,11 @@ export default function CTA() {
         <p
           className="mx-auto mb-4"
           style={{
-            color: '#8892b0',
+            color: 'var(--landing-text-secondary)',
             maxWidth: 500,
             fontSize: '1rem',
             lineHeight: 1.7,
+            transition: 'color 0.25s ease',
           }}
         >
           Join thousands of logistics professionals using Smart Supply Chain to
@@ -105,10 +115,10 @@ export default function CTA() {
 
         <div
           className="d-flex justify-content-center gap-4 mt-5 flex-wrap"
-          style={{ color: '#8892b0', fontSize: '0.82rem' }}
+          style={{ color: 'var(--landing-text-secondary)', fontSize: '0.82rem', transition: 'color 0.25s ease' }}
         >
           {[
-            { icon: 'bi-shield-check-fill', text: 'No credit card required', color: '#00ff78' },
+            { icon: 'bi-shield-check-fill', text: 'No credit card required', color: '#00c850' },
             { icon: 'bi-lightning-charge-fill', text: 'Setup in 2 minutes', color: '#00c6ff' },
             { icon: 'bi-arrow-counterclockwise', text: '14-day free trial', color: '#ff9900' },
           ].map(({ icon, text, color }) => (

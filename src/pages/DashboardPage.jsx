@@ -11,7 +11,7 @@ export default function DashboardPage() {
   })
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#060c18' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-page)' }}>
       <DashboardNav />
 
       <main
@@ -25,10 +25,10 @@ export default function DashboardPage() {
       >
         <div className="d-flex align-items-center justify-content-between mb-4">
           <div>
-            <h4 style={{ color: '#e6f1ff', fontWeight: 800, margin: 0 }}>
+            <h4 style={{ color: 'var(--text-heading)', fontWeight: 800, margin: 0 }}>
               Supply Chain Dashboard
             </h4>
-            <p style={{ color: '#8892b0', fontSize: 13, margin: 0 }}>{now}</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: 0 }}>{now}</p>
           </div>
           <div className="d-flex align-items-center gap-2">
             <span
@@ -55,9 +55,9 @@ export default function DashboardPage() {
             <button
               className="btn btn-sm rounded-pill px-3"
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                color: '#ccd6f6',
+                background: 'var(--bg-input)',
+                border: '1px solid var(--border-medium)',
+                color: 'var(--text-body)',
                 fontSize: 13,
               }}
             >
@@ -91,7 +91,7 @@ export default function DashboardPage() {
           50%       { opacity: 0.5; transform: scale(1.4); }
         }
         .leaflet-container {
-          background: #07101e !important;
+          background: var(--bg-surface-solid) !important;
         }
       `}</style>
     </div>

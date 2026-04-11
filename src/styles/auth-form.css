@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   Auth Form Card — glassmorphism, dark theme
+   Auth Form Card — glassmorphism, theme-aware
    ═══════════════════════════════════════════════════════════ */
 
 /* Card shell */
@@ -8,14 +8,15 @@
   max-width: 420px;
   padding: 40px 36px 32px;
   border-radius: 24px;
-  background: rgba(12, 20, 38, 0.75);
+  background: var(--af-card-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--border-medium);
   box-shadow:
     0 0 0 1px rgba(0, 220, 100, 0.07),
-    0 12px 48px rgba(0, 0, 0, 0.6),
-    0 0 80px rgba(0, 160, 80, 0.07);
+    0 12px 48px rgba(0, 0, 0, 0.15),
+    0 0 80px rgba(0, 160, 80, 0.05);
+  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 /* Header */
@@ -26,14 +27,16 @@
 .af-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #e8f0fe;
+  color: var(--af-title-color);
   margin: 0 0 6px;
   letter-spacing: -0.3px;
+  transition: color 0.25s ease;
 }
 .af-sub {
   font-size: 0.88rem;
-  color: rgba(180, 200, 230, 0.55);
+  color: var(--af-sub-color);
   margin: 0;
+  transition: color 0.25s ease;
 }
 
 /* Field group */
@@ -44,10 +47,11 @@
   display: block;
   font-size: 0.82rem;
   font-weight: 600;
-  color: rgba(200, 215, 240, 0.7);
+  color: var(--af-label-color);
   text-transform: uppercase;
   letter-spacing: 0.6px;
   margin-bottom: 6px;
+  transition: color 0.25s ease;
 }
 
 /* Input wrapper (for left icon + eye btn) */
@@ -60,27 +64,29 @@
   position: absolute;
   left: 14px;
   font-size: 15px;
-  color: rgba(180, 200, 230, 0.4);
+  color: var(--af-label-color);
   pointer-events: none;
   transition: color 0.2s;
+  opacity: 0.6;
 }
 
 /* Input itself */
 .af-input {
   width: 100%;
   padding: 13px 42px 13px 40px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: var(--af-input-bg);
+  border: 1px solid var(--af-input-border);
   border-radius: 12px;
-  color: #dce8ff;
+  color: var(--af-input-text);
   font-size: 0.93rem;
   outline: none;
-  transition: border-color 0.22s, box-shadow 0.22s;
+  transition: border-color 0.22s, box-shadow 0.22s, background 0.25s, color 0.25s;
   caret-color: #00ff78;
-  -webkit-text-fill-color: #dce8ff;
+  -webkit-text-fill-color: var(--af-input-text);
 }
 .af-input::placeholder {
-  color: rgba(180, 200, 230, 0.35);
+  color: var(--af-sub-color);
+  -webkit-text-fill-color: var(--af-sub-color);
 }
 .af-input:focus {
   border-color: rgba(0, 220, 100, 0.55);
@@ -90,12 +96,13 @@
 .af-input:-webkit-autofill,
 .af-input:-webkit-autofill:focus {
   transition: background-color 9999s ease-in-out 0s;
-  -webkit-text-fill-color: #dce8ff !important;
+  -webkit-text-fill-color: var(--af-autofill-text) !important;
 }
 
 /* Focus: also highlight the left icon */
 .af-input-wrap:focus-within .af-input-icon {
   color: rgba(0, 220, 100, 0.7);
+  opacity: 1;
 }
 
 /* Eye toggle button */
@@ -105,13 +112,14 @@
   background: none;
   border: none;
   padding: 0;
-  color: rgba(180, 200, 230, 0.4);
+  color: var(--af-label-color);
   font-size: 15px;
   cursor: pointer;
   line-height: 1;
   transition: color 0.2s;
+  opacity: 0.6;
 }
-.af-eye:hover { color: #00e06a; }
+.af-eye:hover { color: #00e06a; opacity: 1; }
 
 /* Forgot password link */
 .af-forgot {
@@ -150,8 +158,9 @@
 .af-switch {
   text-align: center;
   font-size: 0.87rem;
-  color: rgba(180, 200, 230, 0.55);
+  color: var(--af-switch-color);
   margin: 22px 0 0;
+  transition: color 0.25s ease;
 }
 .af-switch-link {
   color: #00e06a;

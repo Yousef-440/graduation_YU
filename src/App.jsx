@@ -1,18 +1,23 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
-import { AuthProvider, useAuth } from './context/AuthContext'
+import { AuthProvider, useAuth }    from './context/AuthContext'
+import { AppThemeProvider }         from './context/ThemeContext'
 import Navbar           from './components/Navbar'
 import Hero             from './components/Hero'
 import Features         from './components/Features'
 import DashboardPreview from './components/DashboardPreview'
 import CTA              from './components/CTA'
-import LoginPage        from './pages/LoginPage'
-import RegisterPage     from './pages/RegisterPage'
-import DashboardPage    from './pages/DashboardPage'
+import LoginPage            from './pages/LoginPage'
+import RegisterPage         from './pages/RegisterPage'
+import DashboardPage        from './pages/DashboardPage'
+import ForgotPasswordPage   from './pages/ForgotPasswordPage'
+import SuppliersPage        from './pages/SuppliersPage'
+import ProductsPage         from './pages/ProductsPage'
+import OrdersPage           from './pages/OrdersPage'
 
 function LandingPage() {
   return (
-    <div style={{ background: '#020818', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--landing-bg)', minHeight: '100vh', transition: 'background 0.25s ease' }}>
       <Navbar />
       <Hero />
       <Features />
@@ -20,12 +25,13 @@ function LandingPage() {
       <CTA />
       <footer
         style={{
-          background: '#010510',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
+          background: 'var(--landing-footer-bg)',
+          borderTop: '1px solid var(--landing-footer-border)',
           padding: '24px 0',
           textAlign: 'center',
-          color: '#8892b0',
+          color: 'var(--landing-text-secondary)',
           fontSize: '0.85rem',
+          transition: 'background 0.25s ease, border-color 0.25s ease',
         }}
       >
         © 2026 Smart Supply Chain. All rights reserved.
@@ -42,11 +48,11 @@ function ProtectedRoute({ children }) {
       <div
         style={{
           minHeight: '100vh',
-          background: '#060c18',
+          background: 'var(--bg-page)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#8892b0',
+          color: 'var(--text-muted)',
           fontSize: 14,
         }}
       >
@@ -69,16 +75,13 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/"         element={<LandingPage />} />
-      <Route path="/login"    element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/login"            element={<LoginPage />} />
+      <Route path="/register"         element={<RegisterPage />} />
+      <Route path="/forgot-password"  element={<ForgotPasswordPage />} />
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="/suppliers" element={<ProtectedRoute><SuppliersPage /></ProtectedRoute>} />
+      <Route path="/products"  element={<ProtectedRoute><ProductsPage /></ProtectedRoute>} />
+      <Route path="/orders"    element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
     </Routes>
   )
 }
@@ -86,9 +89,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <AppThemeProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </AppThemeProvider>
     </BrowserRouter>
   )
 }

@@ -1,17 +1,31 @@
 import { Link } from 'react-router-dom'
+import { useThemeMode } from '../context/ThemeContext'
 
 export default function Hero() {
+  const { mode } = useThemeMode()
+  const isDark = mode === 'dark'
+
+  const heroBg = isDark
+    ? 'radial-gradient(ellipse at 20% 50%, rgba(0,100,255,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(0,255,120,0.12) 0%, transparent 55%), linear-gradient(135deg, #020818 0%, #050d20 50%, #030b1a 100%)'
+    : 'radial-gradient(ellipse at 20% 50%, rgba(0,100,255,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(0,200,100,0.08) 0%, transparent 55%), linear-gradient(135deg, #f0f4f8 0%, #e8f0fb 50%, #edf4f0 100%)'
+
+  const chartBg = isDark
+    ? 'linear-gradient(135deg, #071428 0%, #0a1f3d 50%, #071428 100%)'
+    : 'linear-gradient(135deg, #e8f0fb 0%, #d8e8f8 50%, #e8f0fb 100%)'
+
+  const gridLineColor = isDark ? 'rgba(0,100,255,0.12)' : 'rgba(0,80,200,0.08)'
+
   return (
     <section
       id="home"
       style={{
         minHeight: '100vh',
-        background:
-          'radial-gradient(ellipse at 20% 50%, rgba(0,100,255,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(0,255,120,0.12) 0%, transparent 55%), linear-gradient(135deg, #020818 0%, #050d20 50%, #030b1a 100%)',
+        background: heroBg,
         paddingTop: 100,
         paddingBottom: 60,
         overflow: 'hidden',
         position: 'relative',
+        transition: 'background 0.25s ease',
       }}
     >
       <div
@@ -21,7 +35,9 @@ export default function Hero() {
           left: '5%',
           width: 320,
           height: 320,
-          background: 'radial-gradient(circle, rgba(0,100,255,0.12) 0%, transparent 70%)',
+          background: isDark
+            ? 'radial-gradient(circle, rgba(0,100,255,0.12) 0%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(0,100,255,0.07) 0%, transparent 70%)',
           borderRadius: '50%',
           pointerEvents: 'none',
         }}
@@ -33,7 +49,9 @@ export default function Hero() {
           right: '8%',
           width: 260,
           height: 260,
-          background: 'radial-gradient(circle, rgba(0,255,120,0.10) 0%, transparent 70%)',
+          background: isDark
+            ? 'radial-gradient(circle, rgba(0,255,120,0.10) 0%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(0,200,100,0.07) 0%, transparent 70%)',
           borderRadius: '50%',
           pointerEvents: 'none',
         }}
@@ -46,7 +64,7 @@ export default function Hero() {
               className="badge rounded-pill mb-3 px-3 py-2"
               style={{
                 background: 'rgba(0,255,120,0.12)',
-                color: '#00ff78',
+                color: '#00c850',
                 border: '1px solid rgba(0,255,120,0.3)',
                 fontSize: 13,
                 letterSpacing: '0.5px',
@@ -61,7 +79,8 @@ export default function Hero() {
               style={{
                 fontSize: 'clamp(2rem, 4vw, 3rem)',
                 lineHeight: 1.2,
-                color: '#fff',
+                color: 'var(--landing-text-primary)',
+                transition: 'color 0.25s ease',
               }}
             >
               Smart Supply Chain{' '}
@@ -78,7 +97,7 @@ export default function Hero() {
 
             <p
               className="mb-4"
-              style={{ color: '#8892b0', fontSize: '1.05rem', lineHeight: 1.7 }}
+              style={{ color: 'var(--landing-text-secondary)', fontSize: '1.05rem', lineHeight: 1.7, transition: 'color 0.25s ease' }}
             >
               Track shipments, monitor performance, and make smarter decisions
               — all in one place. Gain real-time visibility across your entire
@@ -110,11 +129,11 @@ export default function Hero() {
                 <div key={label}>
                   <div
                     className="fw-bold"
-                    style={{ fontSize: '1.4rem', color: '#00ff78' }}
+                    style={{ fontSize: '1.4rem', color: '#00c850' }}
                   >
                     {value}
                   </div>
-                  <div style={{ color: '#8892b0', fontSize: '0.82rem' }}>
+                  <div style={{ color: 'var(--landing-text-secondary)', fontSize: '0.82rem', transition: 'color 0.25s ease' }}>
                     {label}
                   </div>
                 </div>
@@ -127,49 +146,30 @@ export default function Hero() {
               style={{
                 borderRadius: 16,
                 overflow: 'hidden',
-                border: '1px solid rgba(0,255,120,0.2)',
-                boxShadow:
-                  '0 0 50px rgba(0,100,255,0.2), 0 0 80px rgba(0,255,120,0.08)',
-                background: 'rgba(5,15,35,0.9)',
+                border: isDark ? '1px solid rgba(0,255,120,0.2)' : '1px solid rgba(0,180,100,0.2)',
+                boxShadow: isDark
+                  ? '0 0 50px rgba(0,100,255,0.2), 0 0 80px rgba(0,255,120,0.08)'
+                  : '0 8px 40px rgba(0,0,0,0.12)',
+                background: 'var(--landing-hero-preview-bg)',
+                transition: 'background 0.25s ease, box-shadow 0.25s ease',
               }}
             >
               <div
                 className="d-flex align-items-center gap-2 px-3 py-2"
                 style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                  borderBottom: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
                 }}
               >
-                <span
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    background: '#ff5f57',
-                  }}
-                />
-                <span
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    background: '#ffbd2e',
-                  }}
-                />
-                <span
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: '50%',
-                    background: '#28c840',
-                  }}
-                />
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ffbd2e' }} />
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
                 <span
                   className="ms-2"
                   style={{
-                    color: '#8892b0',
+                    color: 'var(--landing-text-secondary)',
                     fontSize: 11,
-                    background: 'rgba(255,255,255,0.06)',
+                    background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
                     padding: '2px 10px',
                     borderRadius: 4,
                   }}
@@ -178,12 +178,7 @@ export default function Hero() {
                 </span>
                 <span
                   className="ms-auto badge"
-                  style={{
-                    background: '#00ff78',
-                    color: '#000',
-                    fontSize: 10,
-                    fontWeight: 700,
-                  }}
+                  style={{ background: '#00c850', color: '#000', fontSize: 10, fontWeight: 700 }}
                 >
                   LIVE
                 </span>
@@ -192,119 +187,57 @@ export default function Hero() {
               <div
                 style={{
                   height: 200,
-                  background:
-                    'linear-gradient(135deg, #071428 0%, #0a1f3d 50%, #071428 100%)',
+                  background: chartBg,
                   position: 'relative',
                   overflow: 'hidden',
+                  transition: 'background 0.25s ease',
                 }}
               >
                 {[...Array(8)].map((_, i) => (
-                  <div
-                    key={`h${i}`}
-                    style={{
-                      position: 'absolute',
-                      left: 0,
-                      right: 0,
-                      top: `${(i + 1) * 12}%`,
-                      height: 1,
-                      background: 'rgba(0,100,255,0.12)',
-                    }}
-                  />
+                  <div key={`h${i}`} style={{ position: 'absolute', left: 0, right: 0, top: `${(i + 1) * 12}%`, height: 1, background: gridLineColor }} />
                 ))}
                 {[...Array(12)].map((_, i) => (
-                  <div
-                    key={`v${i}`}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      bottom: 0,
-                      left: `${(i + 1) * 8}%`,
-                      width: 1,
-                      background: 'rgba(0,100,255,0.12)',
-                    }}
-                  />
+                  <div key={`v${i}`} style={{ position: 'absolute', top: 0, bottom: 0, left: `${(i + 1) * 8}%`, width: 1, background: gridLineColor }} />
                 ))}
 
-                <svg
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                  }}
-                >
+                <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
                   <polyline
                     points="60,140 130,100 200,120 290,70 370,90 450,60 530,80"
                     fill="none"
-                    stroke="rgba(0,255,120,0.6)"
+                    stroke="rgba(0,200,100,0.6)"
                     strokeWidth="2"
                     strokeDasharray="6 3"
                   />
                 </svg>
 
                 {[
-                  { x: '18%', y: '70%', color: '#00ff78' },
+                  { x: '18%', y: '70%', color: '#00c850' },
                   { x: '36%', y: '52%', color: '#00c6ff' },
                   { x: '55%', y: '63%', color: '#ff9900' },
-                  { x: '72%', y: '38%', color: '#00ff78' },
+                  { x: '72%', y: '38%', color: '#00c850' },
                   { x: '88%', y: '44%', color: '#00c6ff' },
                 ].map(({ x, y, color }, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      position: 'absolute',
-                      left: x,
-                      top: y,
-                      width: 12,
-                      height: 12,
-                      borderRadius: '50%',
-                      background: color,
-                      boxShadow: `0 0 8px ${color}`,
-                      transform: 'translate(-50%, -50%)',
-                    }}
-                  />
+                  <div key={i} style={{ position: 'absolute', left: x, top: y, width: 12, height: 12, borderRadius: '50%', background: color, boxShadow: `0 0 8px ${color}`, transform: 'translate(-50%, -50%)' }} />
                 ))}
               </div>
 
-              <div
-                className="d-flex gap-2 p-3"
-                style={{ background: 'rgba(5,15,35,0.95)' }}
-              >
+              <div className="d-flex gap-2 p-3" style={{ background: 'var(--landing-hero-stats-bg)', transition: 'background 0.25s ease' }}>
                 {[
                   { label: 'Total Shipments', value: '15', sub: 'On Track', color: '#00c6ff' },
-                  { label: 'Delivery Rate', value: '92%', sub: 'This Month', color: '#00ff78' },
+                  { label: 'Delivery Rate', value: '92%', sub: 'This Month', color: '#00c850' },
                   { label: 'Low Stock', value: '3', sub: 'Items Alert', color: '#ff4444' },
                   { label: 'Unit Cost', value: '$12.50', sub: 'Avg', color: '#ff9900' },
                 ].map(({ label, value, sub, color }) => (
                   <div
                     key={label}
                     className="flex-fill text-center p-2 rounded"
-                    style={{
-                      background: 'rgba(255,255,255,0.04)',
-                      border: `1px solid ${color}33`,
-                    }}
+                    style={{ background: 'var(--landing-preview-item-bg)', border: `1px solid ${color}33`, transition: 'background 0.25s ease' }}
                   >
-                    <div
-                      style={{
-                        fontSize: 10,
-                        color: '#8892b0',
-                        marginBottom: 2,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.3px',
-                      }}
-                    >
+                    <div style={{ fontSize: 10, color: 'var(--landing-text-secondary)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                       {label}
                     </div>
-                    <div
-                      style={{
-                        fontSize: '1rem',
-                        fontWeight: 700,
-                        color: color,
-                      }}
-                    >
-                      {value}
-                    </div>
-                    <div style={{ fontSize: 9, color: '#8892b0' }}>{sub}</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: color }}>{value}</div>
+                    <div style={{ fontSize: 9, color: 'var(--landing-text-secondary)' }}>{sub}</div>
                   </div>
                 ))}
               </div>
