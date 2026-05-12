@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import '../styles/auth-layout.css'
 
 export default function AuthLayout({ children }) {
+  const [hover, setHover] = useState(false)
+
   return (
     <div className="al-root">
      
@@ -64,19 +67,50 @@ export default function AuthLayout({ children }) {
       <div className="al-right">
         <Link
           to="/"
-          className="d-flex align-items-center gap-2 text-decoration-none mb-4"
+          className="text-decoration-none mb-4"
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
           style={{
-            color: '#8892b0',
+            alignSelf: 'flex-start',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '8px 18px 8px 10px',
+            borderRadius: 50,
+            background: hover
+              ? 'rgba(0,255,120,0.08)'
+              : 'rgba(255,255,255,0.04)',
+            border: hover
+              ? '1px solid rgba(0,255,120,0.28)'
+              : '1px solid rgba(255,255,255,0.09)',
+            boxShadow: hover
+              ? '0 0 18px rgba(0,255,120,0.1)'
+              : 'none',
+            color: hover ? '#00ff78' : '#8892b0',
             fontSize: 13,
             fontWeight: 500,
-            alignSelf: 'flex-start',
-            transition: 'color 0.18s',
+            transition: 'all 0.22s ease',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#00ff78')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#8892b0')}
         >
-          <i className="bi bi-arrow-left" />
-          Back
+          <span style={{
+            width: 28, height: 28,
+            borderRadius: '50%',
+            background: hover ? 'rgba(0,255,120,0.15)' : 'rgba(255,255,255,0.06)',
+            border: hover ? '1px solid rgba(0,255,120,0.3)' : '1px solid rgba(255,255,255,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+            transition: 'all 0.22s ease',
+          }}>
+            <i
+              className="bi bi-arrow-left"
+              style={{
+                fontSize: 13,
+                transform: hover ? 'translateX(-2px)' : 'translateX(0)',
+                transition: 'transform 0.22s ease',
+              }}
+            />
+          </span>
+          Back to Home
         </Link>
         {children}
       </div>

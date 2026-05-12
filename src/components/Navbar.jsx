@@ -31,7 +31,7 @@ export default function Navbar() {
             <i className="bi bi-box-seam-fill text-dark fw-bold" style={{ fontSize: 18 }} />
           </div>
           <span className="fw-bold fs-5" style={{ color: 'var(--landing-text-primary)', letterSpacing: '0.5px' }}>
-            Smart Supply Chain
+            Supply Chain Management
           </span>
         </Link>
 
@@ -100,17 +100,6 @@ export default function Navbar() {
               }}
             >
               Login
-            </Link>
-            <Link
-              to="/register"
-              className="btn btn-sm px-3 py-2 rounded-pill fw-semibold"
-              style={{
-                background: 'linear-gradient(135deg, #00ff78, #00c850)',
-                color: '#000',
-                boxShadow: '0 0 14px rgba(0,255,120,0.45)',
-              }}
-            >
-              Sign Up
             </Link>
           </div>
         </div>

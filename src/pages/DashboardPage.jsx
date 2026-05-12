@@ -1,14 +1,33 @@
-import DashboardNav      from '../components/dashboard/DashboardNav'
-import SummaryCards      from '../components/dashboard/SummaryCards'
-import KpiCards          from '../components/dashboard/KpiCards'
-import PerformanceChart  from '../components/dashboard/PerformanceChart'
-import ShipmentMap       from '../components/dashboard/ShipmentMap'
-import RecentOrders      from '../components/dashboard/RecentOrders'
+import { useState, useRef } from 'react'
+import DashboardNav        from '../components/dashboard/DashboardNav'
+import SummaryCards        from '../components/dashboard/SummaryCards'
+import KpiCards            from '../components/dashboard/KpiCards'
+import OrderStatusTracker  from '../components/dashboard/OrderStatusTracker'
+import RecentOrders        from '../components/dashboard/RecentOrders'
+import LateOrdersAlert     from '../components/dashboard/LateOrdersAlert'
 
 export default function DashboardPage() {
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [refreshing, setRefreshing] = useState(false)
+  const [toast, setToast]           = useState(false)
+  const toastTimer                  = useRef(null)
+
   const now = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   })
+
+  const handleRefresh = () => {
+    if (refreshing) return
+    setRefreshing(true)
+    setRefreshKey((k) => k + 1)
+
+    clearTimeout(toastTimer.current)
+    setTimeout(() => {
+      setRefreshing(false)
+      setToast(true)
+      toastTimer.current = setTimeout(() => setToast(false), 2500)
+    }, 1200)
+  }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-page)' }}>
@@ -30,6 +49,7 @@ export default function DashboardPage() {
             </h4>
             <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: 0 }}>{now}</p>
           </div>
+
           <div className="d-flex align-items-center gap-2">
             <span
               className="badge rounded-pill px-3 py-2"
@@ -52,37 +72,72 @@ export default function DashboardPage() {
               />
               All Systems Operational
             </span>
+
             <button
-              className="btn btn-sm rounded-pill px-3"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              title="Refresh Data"
               style={{
-                background: 'var(--bg-input)',
+                width: 36, height: 36,
+                borderRadius: 10,
                 border: '1px solid var(--border-medium)',
-                color: 'var(--text-body)',
-                fontSize: 13,
+                background: 'var(--bg-input)',
+                color: refreshing ? '#00c6ff' : 'var(--text-body)',
+                cursor: refreshing ? 'not-allowed' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+                transition: 'all 0.2s',
+                opacity: refreshing ? 0.75 : 1,
               }}
+              onMouseEnter={(e) => { if (!refreshing) e.currentTarget.style.background = 'var(--bg-row-hover)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-input)' }}
             >
-              <i className="bi bi-arrow-clockwise me-1" />
-              Refresh
+              <i
+                className="bi bi-arrow-clockwise"
+                style={{
+                  fontSize: 15,
+                  display: 'inline-block',
+                  animation: refreshing ? 'spin 0.7s linear infinite' : 'none',
+                }}
+              />
             </button>
           </div>
         </div>
 
-        <SummaryCards />
+        {toast && (
+          <div style={{
+            marginBottom: 16,
+            padding: '10px 16px',
+            borderRadius: 10,
+            background: 'rgba(0,220,100,0.08)',
+            border: '1px solid rgba(0,220,100,0.22)',
+            color: '#00e06a',
+            fontSize: 12,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            animation: 'fadeIn 0.2s ease',
+          }}>
+            <i className="bi bi-check-circle-fill" style={{ fontSize: 13 }} />
+            Data updated successfully
+          </div>
+        )}
+
+        <SummaryCards      key={`summary-${refreshKey}`}  />
 
         <div className="mb-4">
-          <ShipmentMap />
+          <OrderStatusTracker key={`tracker-${refreshKey}`} />
         </div>
 
-        <div className="row g-4 mb-4">
-          <div className="col-lg-7">
-            <PerformanceChart />
-          </div>
-          <div className="col-lg-5">
-            <KpiCards />
-          </div>
+        <div className="mb-4">
+          <KpiCards          key={`kpi-${refreshKey}`}     />
         </div>
 
-        <RecentOrders />
+        <div className="mb-4">
+          <LateOrdersAlert   key={`late-${refreshKey}`}    />
+        </div>
+
+        <RecentOrders        key={`orders-${refreshKey}`}  />
       </main>
 
       <style>{`
@@ -90,8 +145,13 @@ export default function DashboardPage() {
           0%, 100% { opacity: 1; transform: scale(1); }
           50%       { opacity: 0.5; transform: scale(1.4); }
         }
-        .leaflet-container {
-          background: var(--bg-surface-solid) !important;
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-4px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>

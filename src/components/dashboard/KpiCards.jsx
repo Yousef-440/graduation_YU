@@ -1,21 +1,72 @@
-const kpis = [
-  { name: 'On-Time Delivery Rate',  formula: '(Orders on time / Total orders) × 100', value: '92%',      target: '95%',  pct: 92, color: '#00ff78', icon: 'bi-check2-all',       status: 'Good'       },
-  { name: 'Inventory Turnover',     formula: 'COGS / Average Inventory',               value: '6.4×',     target: '8×',   pct: 80, color: '#00c6ff', icon: 'bi-arrow-repeat',     status: 'Average'    },
-  { name: 'Order Accuracy',         formula: '(Correct orders / Total orders) × 100',  value: '97.3%',    target: '99%',  pct: 97, color: '#a855f7', icon: 'bi-clipboard2-check', status: 'Good'       },
-  { name: 'Cycle Time',             formula: 'Actual delivery date − PO issue date',   value: '4.2 days', target: '3 days', pct: 60, color: '#ff9900', icon: 'bi-clock',            status: 'Needs Work' },
-  { name: 'Cost Per Unit',          formula: 'Total procurement cost / Units received', value: '$12.50',  target: '$11.00', pct: 74, color: '#ff6b6b', icon: 'bi-currency-dollar',  status: 'Needs Work' },
+import { useState, useEffect, useCallback } from 'react'
+import { useAuth } from '../../context/AuthContext'
+
+const KPI_CONFIG = [
+  {
+    key:     'onTimeDeliveryRate',
+    name:    'On-Time Delivery Rate',
+    formula: '(Orders on time / Total orders) × 100',
+    icon:    'bi-check2-all',
+    color:   '#00ff78',
+    format:  (v) => `${Number(v).toFixed(0)}%`,
+  },
+  {
+    key:     'orderAccuracy',
+    name:    'Order Accuracy',
+    formula: '(Correct orders / Total orders) × 100',
+    icon:    'bi-clipboard2-check',
+    color:   '#a855f7',
+    format:  (v) => `${Number(v).toFixed(2)}%`,
+  },
+  {
+    key:     'cycleTime',
+    name:    'Cycle Time',
+    formula: 'Actual delivery date − PO issue date',
+    icon:    'bi-clock',
+    color:   '#ff9900',
+    format:  (v) => `${Number(v).toFixed(1)} days`,
+  },
+  {
+    key:     'costPerUnit',
+    name:    'Cost Per Unit',
+    formula: 'Total procurement cost / Units received',
+    icon:    'bi-currency-dollar',
+    color:   '#ff6b6b',
+    format:  (v) => `$${Number(v).toFixed(2)}`,
+  },
 ]
 
-const statusColor = { 'Good': '#00ff78', 'Average': '#ff9900', 'Needs Work': '#ff6b6b' }
-
 export default function KpiCards() {
+  const { authFetch }       = useAuth()
+  const [data, setData]     = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError]   = useState('')
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await authFetch('/api/kpis/overview')
+      let body = null
+      try { body = await res.json() } catch {}
+      if (res.ok) setData(body)
+      else setError('No data available')
+    } catch {
+      setError('No data available')
+    } finally {
+      setLoading(false)
+    }
+  }, [authFetch])
+
+  useEffect(() => { load() }, [load])
+
   return (
     <div className="rounded-4 p-4"
       style={{
-        background:    'var(--bg-surface)',
-        border:        '1px solid var(--border-subtle)',
+        background:     'var(--bg-surface)',
+        border:         '1px solid var(--border-subtle)',
         backdropFilter: 'blur(12px)',
-        boxShadow:     'var(--shadow-surface)',
+        boxShadow:      'var(--shadow-surface)',
       }}
     >
       <div className="d-flex align-items-center justify-content-between mb-3">
@@ -30,39 +81,37 @@ export default function KpiCards() {
         </span>
       </div>
 
-      <div className="d-flex flex-column gap-3">
-        {kpis.map(({ name, formula, value, target, pct, color, icon, status }) => (
-          <div key={name} className="p-3 rounded-3"
-            style={{ background: 'var(--bg-kpi-item)', border: `1px solid ${color}18` }}
-          >
-            <div className="d-flex align-items-center justify-content-between mb-2">
-              <div className="d-flex align-items-center gap-2">
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: `${color}18`, border: `1px solid ${color}35`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <i className={`bi ${icon}`} style={{ color, fontSize: 14 }} />
+      {loading ? (
+        <div style={{ padding: '28px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>
+          <span className="spinner-border spinner-border-sm me-2" style={{ borderColor: '#00ff78', borderRightColor: 'transparent' }} />
+          Loading KPIs…
+        </div>
+      ) : error ? (
+        <div style={{ padding: '20px 0', textAlign: 'center', color: '#ff6b6b', fontSize: 13 }}>{error}</div>
+      ) : (
+        <div className="d-flex flex-column gap-3">
+          {KPI_CONFIG.map(({ key, name, formula, icon, color, format }) => (
+            <div key={key} className="p-3 rounded-3"
+              style={{ background: 'var(--bg-kpi-item)', border: `1px solid ${color}18` }}
+            >
+              <div className="d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center gap-2">
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: `${color}18`, border: `1px solid ${color}35`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <i className={`bi ${icon}`} style={{ color, fontSize: 14 }} />
+                  </div>
+                  <div>
+                    <div style={{ color: 'var(--text-body)', fontSize: 13, fontWeight: 600 }}>{name}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: 10 }}>{formula}</div>
+                  </div>
                 </div>
-                <div>
-                  <div style={{ color: 'var(--text-body)', fontSize: 13, fontWeight: 600 }}>{name}</div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: 10 }}>{formula}</div>
+                <div style={{ color, fontWeight: 800, fontSize: 18, flexShrink: 0 }}>
+                  {data?.[key] != null ? format(data[key]) : '—'}
                 </div>
-              </div>
-              <div className="text-end">
-                <div style={{ color, fontWeight: 800, fontSize: 15 }}>{value}</div>
-                <span className="badge rounded-pill"
-                  style={{ background: `${statusColor[status]}18`, color: statusColor[status], border: `1px solid ${statusColor[status]}35`, fontSize: 10 }}
-                >
-                  {status}
-                </span>
               </div>
             </div>
-            <div className="d-flex align-items-center gap-2">
-              <div style={{ flex: 1, height: 5, background: 'var(--progress-track)', borderRadius: 3, overflow: 'hidden' }}>
-                <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 3, boxShadow: `0 0 8px ${color}60`, transition: 'width 0.8s ease' }} />
-              </div>
-              <div style={{ color: 'var(--text-muted)', fontSize: 10, whiteSpace: 'nowrap' }}>Target: {target}</div>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

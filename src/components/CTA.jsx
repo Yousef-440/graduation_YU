@@ -92,13 +92,13 @@ export default function CTA() {
             transition: 'color 0.25s ease',
           }}
         >
-          Join thousands of logistics professionals using Smart Supply Chain to
+          Join thousands of logistics professionals using Supply Chain Management to
           streamline operations and boost performance.
         </p>
 
         <div className="d-flex justify-content-center gap-3 flex-wrap">
           <Link
-            to="/register"
+            to="/login"
             className="btn px-5 py-3 fw-bold rounded-pill"
             style={{
               background: 'linear-gradient(135deg, #00ff78, #00c850)',
@@ -108,8 +108,8 @@ export default function CTA() {
               letterSpacing: '0.3px',
             }}
           >
-            <i className="bi bi-person-plus-fill me-2" />
-            Sign Up Now
+            <i className="bi bi-box-arrow-in-right me-2" />
+            Sign In Now
           </Link>
         </div>
 

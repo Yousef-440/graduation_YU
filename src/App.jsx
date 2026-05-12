@@ -8,12 +8,13 @@ import Features         from './components/Features'
 import DashboardPreview from './components/DashboardPreview'
 import CTA              from './components/CTA'
 import LoginPage            from './pages/LoginPage'
-import RegisterPage         from './pages/RegisterPage'
 import DashboardPage        from './pages/DashboardPage'
 import ForgotPasswordPage   from './pages/ForgotPasswordPage'
 import SuppliersPage        from './pages/SuppliersPage'
 import ProductsPage         from './pages/ProductsPage'
 import OrdersPage           from './pages/OrdersPage'
+import UsersPage            from './pages/UsersPage'
+import HistoryPage          from './pages/HistoryPage'
 
 function LandingPage() {
   return (
@@ -34,7 +35,7 @@ function LandingPage() {
           transition: 'background 0.25s ease, border-color 0.25s ease',
         }}
       >
-        © 2026 Smart Supply Chain. All rights reserved.
+        © 2026 Supply Chain Management. All rights reserved.
       </footer>
     </div>
   )
@@ -76,12 +77,14 @@ function AppRoutes() {
     <Routes>
       <Route path="/"         element={<LandingPage />} />
       <Route path="/login"            element={<LoginPage />} />
-      <Route path="/register"         element={<RegisterPage />} />
+      <Route path="/register"         element={<Navigate to="/login" replace />} />
       <Route path="/forgot-password"  element={<ForgotPasswordPage />} />
       <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/suppliers" element={<ProtectedRoute><SuppliersPage /></ProtectedRoute>} />
       <Route path="/products"  element={<ProtectedRoute><ProductsPage /></ProtectedRoute>} />
       <Route path="/orders"    element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+      <Route path="/users"     element={<ProtectedRoute><UsersPage /></ProtectedRoute>} />
+      <Route path="/history"   element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
     </Routes>
   )
 }

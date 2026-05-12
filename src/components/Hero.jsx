@@ -83,7 +83,7 @@ export default function Hero() {
                 transition: 'color 0.25s ease',
               }}
             >
-              Smart Supply Chain{' '}
+              Supply Chain Management{' '}
               <span
                 style={{
                   background: 'linear-gradient(90deg, #00ff78, #00c6ff)',
@@ -106,7 +106,7 @@ export default function Hero() {
 
             <div className="d-flex flex-wrap gap-3">
               <Link
-                to="/register"
+                to="/login"
                 className="btn px-4 py-2 fw-semibold rounded-pill"
                 style={{
                   background: 'linear-gradient(135deg, #00ff78, #00c850)',

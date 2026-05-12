@@ -119,12 +119,6 @@ export default function LoginForm() {
         </button>
       </form>
 
-      <p className="af-switch">
-        Don&apos;t have an account?{' '}
-        <Link to="/register" className="af-switch-link">
-          Register
-        </Link>
-      </p>
     </div>
   )
 }

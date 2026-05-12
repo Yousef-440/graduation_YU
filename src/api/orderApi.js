@@ -49,3 +49,48 @@ export async function cancelOrder(authFetch, id) {
     return { error: 'Network error. Please check your connection.' }
   }
 }
+
+export async function updateOrderStatus(authFetch, id, newStatus) {
+  try {
+    const res = await authFetch(`${BASE}/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ newStatus }),
+    })
+    let body = null
+    try { body = await res.json() } catch {}
+    if (res.ok) return { data: body }
+    return { error: extractMessage(body, 'Failed to update order status.') }
+  } catch {
+    return { error: 'Network error. Please check your connection.' }
+  }
+}
+
+export async function updateOrderAccuracy(authFetch, id, isAccurate) {
+  try {
+    const res = await authFetch(`${BASE}/${id}/accuracy`, {
+      method: 'PUT',
+      body: JSON.stringify({ isAccurate }),
+    })
+    let body = null
+    try { body = await res.json() } catch {}
+    if (res.ok) return { data: body }
+    return { error: extractMessage(body, 'Failed to update accuracy.') }
+  } catch {
+    return { error: 'Network error. Please check your connection.' }
+  }
+}
+
+export async function bulkUpdateOrderStatus(authFetch, currentStatus, newStatus) {
+  try {
+    const res = await authFetch(`${BASE}/status/bulk`, {
+      method: 'PATCH',
+      body: JSON.stringify({ currentStatus, newStatus }),
+    })
+    let body = null
+    try { body = await res.json() } catch {}
+    if (res.ok) return { data: body }
+    return { error: extractMessage(body, 'Failed to bulk update orders.') }
+  } catch {
+    return { error: 'Network error. Please check your connection.' }
+  }
+}

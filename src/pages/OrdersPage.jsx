@@ -2,16 +2,18 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import TextField from '@mui/material/TextField'
 import MenuItem  from '@mui/material/MenuItem'
 import DashboardNav from '../components/dashboard/DashboardNav'
+import DatePicker   from '../components/DatePicker'
 import { useAuth } from '../context/AuthContext'
-import { getOrders, createOrder, cancelOrder } from '../api/orderApi'
+import { getOrders, createOrder, cancelOrder, updateOrderAccuracy } from '../api/orderApi'
 import { getSuppliers } from '../api/supplierApi'
 import { getProducts } from '../api/productApi'
 
 const STATUS = {
-  PENDING:   { label: 'Pending',   color: '#8892b0', bg: 'rgba(136,146,176,0.15)', border: 'rgba(136,146,176,0.3)'  },
-  SHIPPED:   { label: 'Shipped',   color: '#00c6ff', bg: 'rgba(0,198,255,0.15)',   border: 'rgba(0,198,255,0.3)'    },
-  DELIVERED: { label: 'Delivered', color: '#00ff78', bg: 'rgba(0,255,120,0.15)',   border: 'rgba(0,255,120,0.3)'    },
-  CANCELLED: { label: 'Cancelled', color: '#ff4444', bg: 'rgba(255,68,68,0.15)',   border: 'rgba(255,68,68,0.3)'    },
+  PENDING:    { label: 'Pending',    color: '#8892b0', bg: 'rgba(136,146,176,0.15)', border: 'rgba(136,146,176,0.3)'  },
+  PROCESSING: { label: 'Processing', color: '#00c6ff', bg: 'rgba(0,198,255,0.15)',   border: 'rgba(0,198,255,0.3)'    },
+  SHIPPED:    { label: 'Shipped',    color: '#ff9900', bg: 'rgba(255,153,0,0.15)',   border: 'rgba(255,153,0,0.3)'    },
+  DELIVERED:  { label: 'Delivered',  color: '#00ff78', bg: 'rgba(0,255,120,0.15)',   border: 'rgba(0,255,120,0.3)'    },
+  CANCELLED:  { label: 'Cancelled',  color: '#ff4444', bg: 'rgba(255,68,68,0.15)',   border: 'rgba(255,68,68,0.3)'    },
 }
 
 const CANCELLABLE = new Set(['PENDING', 'SHIPPED'])
@@ -22,11 +24,12 @@ const EMPTY_ITEM    = { productId: '', quantity: 1, unitPrice: 0, subtotal: 0 }
 const EMPTY_FILTERS = { status: '', supplierId: '', fromDate: '', toDate: '', search: '' }
 
 function CreateOrderForm({ suppliers, products, productsLoading, productsError, onCreated, onCancel }) {
-  const { authFetch }               = useAuth()
-  const [supplierId, setSupplierId] = useState('')
-  const [items, setItems]           = useState([{ ...EMPTY_ITEM }])
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError]           = useState('')
+  const { authFetch }                                   = useAuth()
+  const [supplierId, setSupplierId]                     = useState('')
+  const [items, setItems]                               = useState([{ ...EMPTY_ITEM }])
+  const [expectedDeliveryDate, setExpectedDeliveryDate] = useState('')
+  const [submitting, setSubmitting]                     = useState(false)
+  const [error, setError]                               = useState('')
 
   const productMap = Object.fromEntries(products.map((p) => [String(p.id), p]))
 
@@ -63,6 +66,7 @@ function CreateOrderForm({ suppliers, products, productsLoading, productsError, 
     const payload = {
       supplierId,
       items: items.map((it) => ({ productId: it.productId, quantity: parseInt(it.quantity, 10) })),
+      ...(expectedDeliveryDate ? { expectedDeliveryDate } : {}),
     }
     setSubmitting(true)
     const { data, error: err } = await createOrder(authFetch, payload)
@@ -98,6 +102,18 @@ function CreateOrderForm({ suppliers, products, productsLoading, productsError, 
             No suppliers found. <a href="/suppliers" style={{ color: '#00c6ff' }}>Add one first</a>.
           </p>
         )}
+      </div>
+
+      <div style={{ marginBottom: 20 }}>
+        <label style={{ display: 'block', color: 'var(--text-muted)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 6 }}>
+          Expected Delivery Date
+        </label>
+        <DatePicker
+          value={expectedDeliveryDate}
+          onChange={setExpectedDeliveryDate}
+          placeholder="Select delivery date"
+          disablePast
+        />
       </div>
 
       <div style={{ marginBottom: 16 }}>
@@ -314,9 +330,17 @@ function FilterBar({ filters, suppliers, onChange, onClear }) {
   )
 }
 
-function OrderRow({ order, onCancelRequest }) {
-  const [open, setOpen] = useState(false)
-  const s = STATUS[order.status] ?? STATUS.PENDING
+function OrderRow({ order, onCancelRequest, authFetch, onOrderUpdated }) {
+  const [open, setOpen]                   = useState(false)
+  const [accuracyLoading, setAccuracyLoading] = useState(false)
+  const s = STATUS[order.status] ?? { label: order.status, color: '#8892b0', bg: 'rgba(136,146,176,0.15)', border: 'rgba(136,146,176,0.3)' }
+
+  const handleAccuracyToggle = async () => {
+    setAccuracyLoading(true)
+    const { data, error } = await updateOrderAccuracy(authFetch, order.id, !order.isAccurate)
+    setAccuracyLoading(false)
+    if (!error) onOrderUpdated(data)
+  }
 
   return (
     <>
@@ -342,21 +366,70 @@ function OrderRow({ order, onCancelRequest }) {
           </span>
         </td>
         <td style={{ padding: '14px 16px', background: 'transparent', verticalAlign: 'middle' }} onClick={(e) => e.stopPropagation()}>
-          {CANCELLABLE.has(order.status) && (
-            <button
-              onClick={() => onCancelRequest(order)}
-              title="Cancel order"
-              style={{ height: 30, padding: '0 12px', borderRadius: 8, border: '1px solid rgba(255,80,80,0.3)', background: 'rgba(255,60,60,0.08)', color: '#ff6b6b', cursor: 'pointer', fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 }}
-            >
-              <i className="bi bi-x-circle" style={{ fontSize: 12 }} /> Cancel
-            </button>
-          )}
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {CANCELLABLE.has(order.status) && (
+              <button
+                onClick={() => onCancelRequest(order)}
+                title="Cancel order"
+                style={{ height: 30, padding: '0 12px', borderRadius: 8, border: '1px solid rgba(255,80,80,0.3)', background: 'rgba(255,60,60,0.08)', color: '#ff6b6b', cursor: 'pointer', fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 }}
+              >
+                <i className="bi bi-x-circle" style={{ fontSize: 12 }} /> Cancel
+              </button>
+            )}
+            {order.status === 'DELIVERED' && (
+              <button
+                onClick={handleAccuracyToggle}
+                disabled={accuracyLoading}
+                title={order.isAccurate ? 'Mark as inaccurate' : 'Mark as accurate'}
+                style={{
+                  height: 30, padding: '0 12px', borderRadius: 8, fontSize: 11, fontWeight: 600,
+                  cursor: accuracyLoading ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  border: order.isAccurate ? '1px solid rgba(255,80,80,0.3)' : '1px solid rgba(0,255,120,0.3)',
+                  background: order.isAccurate ? 'rgba(255,60,60,0.08)' : 'rgba(0,255,120,0.08)',
+                  color: order.isAccurate ? '#ff6b6b' : '#00ff78',
+                  opacity: accuracyLoading ? 0.6 : 1,
+                }}
+              >
+                <i className={`bi ${order.isAccurate ? 'bi-x-circle' : 'bi-check-circle'}`} style={{ fontSize: 12 }} />
+                {accuracyLoading ? '…' : (order.isAccurate ? 'Mark Inaccurate' : 'Mark Accurate')}
+              </button>
+            )}
+          </div>
         </td>
       </tr>
 
       {open && (
         <tr>
           <td colSpan={7} style={{ padding: '0 20px 16px', background: 'var(--bg-surface-alt)', borderBottom: '1px solid var(--border-row)' }}>
+
+            <div style={{ display: 'flex', gap: 28, padding: '10px 12px', margin: '10px 0 14px', borderRadius: 8, background: 'rgba(0,0,0,0.15)', border: '1px solid var(--border-subtle)' }}>
+              <div>
+                <div style={{ color: 'var(--text-muted)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Expected Delivery</div>
+                <div style={{ color: 'var(--text-body)', fontSize: 12, marginTop: 3 }}>{fmtDate(order.expectedDeliveryDate)}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-muted)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Actual Delivery</div>
+                <div style={{ color: order.actualDeliveryDate ? '#00ff78' : 'var(--text-muted)', fontSize: 12, fontWeight: order.actualDeliveryDate ? 600 : 400, marginTop: 3 }}>
+                  {fmtDate(order.actualDeliveryDate)}
+                </div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-muted)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Accuracy</div>
+                <div style={{ marginTop: 3 }}>
+                  <span style={{
+                    padding: '2px 9px', borderRadius: 10, fontSize: 11, fontWeight: 600,
+                    background: order.isAccurate ? 'rgba(0,255,120,0.1)' : 'rgba(255,80,80,0.1)',
+                    color: order.isAccurate ? '#00ff78' : '#ff6b6b',
+                    border: `1px solid ${order.isAccurate ? 'rgba(0,255,120,0.25)' : 'rgba(255,80,80,0.25)'}`,
+                  }}>
+                    <i className={`bi ${order.isAccurate ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-1`} style={{ fontSize: 10 }} />
+                    {order.isAccurate ? 'Accurate' : 'Inaccurate'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <table style={{ width: '100%', fontSize: 12, marginTop: 8 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border-thead)' }}>
@@ -475,6 +548,10 @@ export default function OrdersPage() {
     setCancelError('')
   }
 
+  const handleOrderUpdated = (updatedOrder) => {
+    setOrders((prev) => prev.map((o) => (o.id === updatedOrder.id ? updatedOrder : o)))
+  }
+
   const loading = ordersLoading
 
   return (
@@ -564,7 +641,13 @@ export default function OrdersPage() {
               </thead>
               <tbody>
                 {orders.map((order) => (
-                  <OrderRow key={order.id} order={order} onCancelRequest={setCancelTarget} />
+                  <OrderRow
+                    key={order.id}
+                    order={order}
+                    onCancelRequest={setCancelTarget}
+                    authFetch={authFetch}
+                    onOrderUpdated={handleOrderUpdated}
+                  />
                 ))}
               </tbody>
             </table>

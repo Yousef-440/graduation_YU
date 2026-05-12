@@ -7,6 +7,8 @@ const links = [
   { label: 'Suppliers',       icon: 'bi-building',     to: '/suppliers' },
   { label: 'Products',        icon: 'bi-box-seam',     to: '/products'  },
   { label: 'Purchase Orders', icon: 'bi-receipt',      to: '/orders'    },
+  { label: 'Users',           icon: 'bi-people-fill',  to: '/users',   adminOnly: true },
+  { label: 'History',         icon: 'bi-clock-history',to: '/history', adminOnly: true },
 ]
 
 export default function DashboardNav() {
@@ -88,7 +90,7 @@ export default function DashboardNav() {
       </p>
 
       <nav className="d-flex flex-column gap-1 px-2">
-        {links.map(({ label, icon, to }) => {
+        {links.filter((l) => !l.adminOnly || user?.role === 'ADMIN').map(({ label, icon, to }) => {
           const active = pathname === to
           return (
             <Link

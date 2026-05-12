@@ -91,7 +91,7 @@ export default function DashboardPreview() {
             </ul>
 
             <Link
-              to="/register"
+              to="/login"
               className="btn px-4 py-2 fw-semibold rounded-pill"
               style={{
                 background: 'linear-gradient(135deg, #00ff78, #00c850)',
@@ -99,8 +99,8 @@ export default function DashboardPreview() {
                 boxShadow: '0 0 18px rgba(0,255,120,0.35)',
               }}
             >
-              <i className="bi bi-rocket-takeoff-fill me-2" />
-              Get Started
+              <i className="bi bi-box-arrow-in-right me-2" />
+              Sign In
             </Link>
           </div>
 

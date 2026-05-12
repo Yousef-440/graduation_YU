@@ -5,7 +5,7 @@ import { getProducts } from '../../api/productApi'
 
 function Card({ title, value, sub, icon, color, trend, trendUp, loading }) {
   return (
-    <div className="col-xl-3 col-sm-6">
+    <div className="col-xl-4 col-sm-6">
       <div
         className="h-100 p-3 rounded-4 position-relative overflow-hidden"
         style={{
@@ -44,32 +44,50 @@ function Card({ title, value, sub, icon, color, trend, trendUp, loading }) {
 }
 
 export default function SummaryCards() {
-  const { authFetch, accessToken }      = useAuth()
-  const [orderCount, setOrderCount]     = useState(null)
-  const [productCount, setProductCount] = useState(null)
-  const [loading, setLoading]           = useState(true)
+  const { authFetch, accessToken }            = useAuth()
+  const [orderCount, setOrderCount]           = useState(null)
+  const [productCount, setProductCount]       = useState(null)
+  const [onTimeRate, setOnTimeRate]           = useState(null)
+  const [kpiLoading, setKpiLoading]           = useState(true)
+  const [ordersLoading, setOrdersLoading]     = useState(true)
+  const [productsLoading, setProductsLoading] = useState(true)
 
   const load = useCallback(async () => {
-    const [oRes, pRes] = await Promise.all([getOrders(authFetch), getProducts(accessToken)])
-    setLoading(false)
+    const [oRes, pRes, kpiRes] = await Promise.all([
+      getOrders(authFetch),
+      getProducts(accessToken),
+      authFetch('/api/kpis/overview').then(async (r) => {
+        let body = null
+        try { body = await r.json() } catch {}
+        return r.ok ? { data: body } : { error: true }
+      }).catch(() => ({ error: true })),
+    ])
+
     if (!oRes.error) setOrderCount(oRes.data.length)
+    setOrdersLoading(false)
+
     if (!pRes.error) setProductCount(pRes.data.length)
+    setProductsLoading(false)
+
+    if (!kpiRes.error && kpiRes.data?.onTimeDeliveryRate != null)
+      setOnTimeRate(`${Math.round(kpiRes.data.onTimeDeliveryRate)}%`)
+    else
+      setOnTimeRate('--')
+    setKpiLoading(false)
   }, [authFetch, accessToken])
 
   useEffect(() => { load() }, [load])
 
   const cards = [
-    { title: 'Purchase Orders', value: orderCount   ?? '—', sub: 'Total orders placed',        icon: 'bi-receipt',                   color: '#00c6ff', trend: 'Live from backend',    trendUp: true  },
-    { title: 'On-Time Delivery', value: '92%',               sub: 'On-Time Delivery Rate',       icon: 'bi-check2-circle',             color: '#00ff78', trend: '+2% vs last month',    trendUp: true  },
-    { title: 'Products',         value: productCount ?? '—', sub: 'Items in catalogue',          icon: 'bi-box-seam',                  color: '#ff9900', trend: 'Live from backend',    trendUp: true  },
-    { title: 'Inventory Alerts', value: '3',                 sub: 'Items below reorder level',   icon: 'bi-exclamation-triangle-fill', color: '#ff4444', trend: '2 critical, 1 warning', trendUp: false },
+    { title: 'Purchase Orders',  value: orderCount   ?? '—', sub: 'Total orders placed',  icon: 'bi-receipt',       color: '#00c6ff', trend: 'Live from backend', trendUp: true, loading: ordersLoading   },
+    { title: 'On-Time Delivery', value: onTimeRate   ?? '—', sub: 'On-Time Delivery Rate', icon: 'bi-check2-circle', color: '#00ff78', trend: 'Live from backend', trendUp: true, loading: kpiLoading      },
+    { title: 'Products',         value: productCount ?? '—', sub: 'Items in catalogue',    icon: 'bi-box-seam',      color: '#ff9900', trend: 'Live from backend', trendUp: true, loading: productsLoading },
   ]
 
   return (
     <div className="row g-3 mb-4">
       {cards.map((c) => (
-        <Card key={c.title} {...c}
-          loading={loading && (c.title === 'Purchase Orders' || c.title === 'Products')} />
+        <Card key={c.title} {...c} />
       ))}
     </div>
   )
