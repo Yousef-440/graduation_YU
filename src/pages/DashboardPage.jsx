@@ -5,6 +5,7 @@ import KpiCards            from '../components/dashboard/KpiCards'
 import OrderStatusTracker  from '../components/dashboard/OrderStatusTracker'
 import RecentOrders        from '../components/dashboard/RecentOrders'
 import LateOrdersAlert     from '../components/dashboard/LateOrdersAlert'
+import AiInsights          from '../components/dashboard/AiInsights'
 
 export default function DashboardPage() {
   const [refreshKey, setRefreshKey] = useState(0)
@@ -138,6 +139,10 @@ export default function DashboardPage() {
         </div>
 
         <RecentOrders        key={`orders-${refreshKey}`}  />
+
+        <div className="mt-4">
+          <AiInsights        key={`insights-${refreshKey}`} refreshKey={refreshKey} />
+        </div>
       </main>
 
       <style>{`
