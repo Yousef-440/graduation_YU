@@ -15,6 +15,7 @@ import ProductsPage         from './pages/ProductsPage'
 import OrdersPage           from './pages/OrdersPage'
 import UsersPage            from './pages/UsersPage'
 import HistoryPage          from './pages/HistoryPage'
+import SupplierDiscoveryPage from './pages/SupplierDiscoveryPage'
 
 function LandingPage() {
   return (
@@ -85,6 +86,7 @@ function AppRoutes() {
       <Route path="/orders"    element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
       <Route path="/users"     element={<ProtectedRoute><UsersPage /></ProtectedRoute>} />
       <Route path="/history"   element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
+      <Route path="/supplier-discovery" element={<ProtectedRoute><SupplierDiscoveryPage /></ProtectedRoute>} />
     </Routes>
   )
 }

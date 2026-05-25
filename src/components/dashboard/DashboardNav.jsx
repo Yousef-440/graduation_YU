@@ -9,6 +9,7 @@ const links = [
   { label: 'Purchase Orders', icon: 'bi-receipt',      to: '/orders'    },
   { label: 'Users',           icon: 'bi-people-fill',  to: '/users',   adminOnly: true },
   { label: 'History',         icon: 'bi-clock-history',to: '/history', adminOnly: true },
+  { label: 'Find Suppliers',  icon: 'bi-search-heart', to: '/supplier-discovery' },
 ]
 
 export default function DashboardNav() {
